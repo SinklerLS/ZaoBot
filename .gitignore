@@ -1,0 +1,7 @@
+**/__pycache__/
+.idea/
+env/*
+.vscode/
+venv/*
+creds.json
+Instruction.docx
