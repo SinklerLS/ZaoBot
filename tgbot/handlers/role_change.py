@@ -14,7 +14,7 @@ async def send_link(message: types.Message):
         await message.answer(text="<b>Теперь вы студент!</b>", reply_markup=rkb.student_keyboard)
 
 
-def register_secret_command(dp):
+def register_role_chenge(dp):
     dp.register_message_handler(send_link, content_types=['text'], text=['YOUR_STUDENT_COMMAND'])
     dp.register_message_handler(send_link, content_types=['text'], text=['YOUR_TEACHER_COMMAND'])
     dp.register_message_handler(send_link, content_types=['text'], text=['YOUR_MANAGER_COMMAND'])
