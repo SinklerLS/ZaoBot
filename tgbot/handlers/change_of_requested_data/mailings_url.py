@@ -2,7 +2,6 @@ from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 import tgbot.keyboards.reply as rkb
-from tgbot.models.db import Database
 from tgbot.filters.user_type import UserTypeFilter
 from tgbot.misc.states import MailingsURLChangeStates
 from tgbot.misc.URL_validator import is_string_an_url

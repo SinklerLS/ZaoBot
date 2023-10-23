@@ -8,7 +8,6 @@ import itertools
 import random
 
 import tgbot.keyboards.reply as rkb
-from tgbot.models.db import Database
 from tgbot.filters.user_type import UserTypeFilter
 from tgbot.misc.states import GroupAddStates
 from tgbot.models.database_instance import db

@@ -40,6 +40,9 @@ class Database:
 
                 await cursor.execute('''CREATE TABLE IF NOT EXISTS mailings 
                             (mailings_url TEXT PRIMARY KEY)''')
+                
+                await cursor.execute('''CREATE TABLE IF NOT EXISTS problem_reporting_email 
+                            (email TEXT PRIMARY KEY)''')
 
                 await db.commit()
 
@@ -155,6 +158,13 @@ class Database:
                 await cursor.execute("SELECT * FROM 'retake_cards'")
                 result = await cursor.fetchone()
                 return result
+            
+    async def get_problem_reporting_email(self):
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT * FROM 'problem_reporting_email'")
+                result = await cursor.fetchone()
+                return result
 
     async def change_schedule_url(self, new_url):
         async with aiosqlite.connect(self.db_name) as db:
@@ -222,6 +232,17 @@ class Database:
                     await cursor.execute(f"UPDATE 'mailings' SET 'mailings_url' = ?", (new_url,))
                 await db.commit()
 
+    async def change_problem_reporting_email(self, new_email):
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT COUNT(*) FROM 'problem_reporting_email'")
+                count = await cursor.fetchone()
+                if count[0] == 0:
+                    await cursor.execute("INSERT INTO 'problem_reporting_email' ('email') VALUES (?)", (new_email,))
+                else:
+                    await cursor.execute(f"UPDATE 'problem_reporting_email' SET 'email' = ?", (new_email,))
+                await db.commit()
+
     async def get_user_group_name(self, telegram_id):
         async with aiosqlite.connect(self.db_name) as db:
             async with db.cursor() as cursor:
@@ -229,7 +250,7 @@ class Database:
                 result = await cursor.fetchone()
                 return result[0]
 
-    async def get_url_by_group_name(self, group_name):
+    async def get_performance_list_by_group_name(self, group_name):
         async with aiosqlite.connect(self.db_name) as db:
             async with db.cursor() as cursor:
                 await cursor.execute("SELECT performance_list_url FROM 'groups' WHERE group_name = ?", (group_name,))
@@ -321,6 +342,30 @@ class Database:
                                      (group_name, performance_list_url,))
                 await db.commit()
 
+    async def change_group_name(self, group_name, new_group_name):
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                res = await cursor.execute("UPDATE 'groups' SET group_name = ? WHERE group_name = ?",
+                                           (new_group_name, group_name))
+                await db.commit()
+                return res
+            
+    async def change_group_name_for_students(self, group_name, new_group_name):
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                res = await cursor.execute("UPDATE 'users' SET group_name = ? WHERE group_name = ?",
+                                           (new_group_name, group_name))
+                await db.commit()
+                return res
+            
+    async def change_performance_list_url(self, group_name, new_performance_list_url):
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                res = await cursor.execute("UPDATE 'groups' SET performance_list_url = ? WHERE group_name = ?",
+                                           (new_performance_list_url, group_name))
+                await db.commit()
+                return res
+
     async def get_user_names(self):
         async with aiosqlite.connect(self.db_name) as db:
             async with db.cursor() as cursor:
@@ -403,6 +448,15 @@ class Database:
                 result = await cursor.fetchall()
                 return result
 
+    async def get_student_names_by_group_name(self, group_name):
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                await cursor.execute(
+                    "SELECT last_name, first_name, middle_name FROM 'users' WHERE group_name = ?",
+                    (group_name,))
+                result = await cursor.fetchall()
+                return result
+
     async def get_user_logins(self):
         async with aiosqlite.connect(self.db_name) as db:
             async with db.cursor() as cursor:
@@ -410,7 +464,7 @@ class Database:
                 result = await cursor.fetchall()
                 return result
 
-    async def change_login(self, telegram_id, new_login):
+    async def change_login(self, telegram_id, new_login):  # Возможно не нужно ничего возвращать в этих функциях?
         async with aiosqlite.connect(self.db_name) as db:
             async with db.cursor() as cursor:
                 res = await cursor.execute("UPDATE 'users' SET login = ? WHERE telegram_id = ?",
@@ -453,6 +507,13 @@ class Database:
             async with db.cursor() as cursor:
                 await cursor.execute("DELETE FROM users WHERE last_name=? AND first_name=? AND middle_name=?",
                                      (user[0], user[1], user[2],))
+                await db.commit()
+        
+    async def delete_user_by_login(self, login):
+        async with aiosqlite.connect(self.db_name) as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("DELETE FROM users WHERE login=?",
+                                     (login,))
                 await db.commit()
 
     async def delete_user_without_mn(self, user):

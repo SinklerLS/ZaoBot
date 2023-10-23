@@ -20,10 +20,9 @@ async def send_data_processing_notification(message: Message):
 
 # Возможно стоит подключаться к таблице при запуске бота и не отключаться от нее
 # Создать словарь с группами и подключениями и проверить (узнать сколько места в памяти будут занимать книги)
-# Сделать это завтра!
 async def prepare_excel_file(message: Message):
     group_name = await db.get_user_group_name(message.from_user.id)
-    file_url = await db.get_url_by_group_name(group_name)
+    file_url = await db.get_performance_list_by_group_name(group_name)
     file_id = file_url.split('/')[-2]
     file_url = f'https://drive.google.com/u/0/uc?id={file_id}&export=download'
     failure_flag = 0
@@ -71,7 +70,7 @@ async def find_rows_and_columns(message: Message, workbook):
             column_mapping[cell_value] = cell.column - 1
             
     for cell in sheet[target_row]:
-        if cell.value == '№':
+        if cell.value == '№ п/п':
             column_letter = cell.column_letter
             column_values = sheet[column_letter]
             for column_cell in column_values:

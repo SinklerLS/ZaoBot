@@ -1,7 +1,6 @@
 import gspread
 import datetime
 from tgbot.models.database_instance import db
-from tgbot.handlers.mailing.mailing_text_data import std_groups, std_managers, std_teachers
 
 google_credentials = gspread.service_account(filename='creds.json')
 sheet = google_credentials.open("Бот").worksheet("Рассылка")

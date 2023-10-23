@@ -34,13 +34,13 @@ async def start_authorization(message: Message, state: FSMContext):
     if await db.users_exist():
         msgs_to_del = [await message.answer(text="Введите логин", reply_markup=rkb.login_input_cancel_keyboard)]
         await state.update_data(msgs_to_del=msgs_to_del)
-        await AuthorizationStates.login_waiting_state.set()
+        await AuthorizationStates.getting_login.set()
     else:
         msgs_to_del = [await message.answer(text="Вы будете зарегистрированы как менеджер"),
                        await message.answer(text="Пожалуйста введите ваше ФИО кириллицей через пробел",
                                             reply_markup=rkb.name_input_cancel_keyboard)]
         await state.update_data(msgs_to_del=msgs_to_del)
-        await FirstManagerAuthorizationStates.name_waiting_state.set()
+        await FirstManagerAuthorizationStates.getting_name.set()
 
 
 # !Сделать проверку на непонятные символы
@@ -56,14 +56,14 @@ async def get_login(message: Message, state: FSMContext):
         await state.update_data(login=msg_text[0])
         msgs_to_del = [await message.answer(text="Введите пароль", reply_markup=rkb.password_input_cancel_keyboard)]
         await state.update_data(msgs_to_del=msgs_to_del)
-        await AuthorizationStates.password_waiting_state.set()
+        await AuthorizationStates.getting_password.set()
 
 
 @log_function_call
 async def get_password(message: Message, state: FSMContext):
     await clear_chat(message, state, 1)
     await state.update_data(password=message.text)
-    await AuthorizationStates.data_check_state.set()
+    await AuthorizationStates.checking_data.set()
     await check_data(message, state)
 
 
@@ -78,7 +78,7 @@ async def check_data(message: Message, state: FSMContext):
         msgs_to_del = [await message.answer(text="<b>Данные неверны</b>"),
                        await message.answer(text="Введите логин", reply_markup=rkb.login_input_cancel_keyboard)]
         await state.update_data(msgs_to_del=msgs_to_del)
-        await AuthorizationStates.login_waiting_state.set()
+        await AuthorizationStates.getting_login.set()
 
 
 @log_function_call
@@ -112,7 +112,7 @@ async def check_name(message: Message, state: FSMContext):
         msgs_to_del = [await message.answer(text=f"Ваше ФИО: <b>{message.text}</b> \nвведено корректно?",
                                             reply_markup=ikb.confirmation_kb)]
         await state.update_data(name=message.text, msgs_to_del=msgs_to_del)
-        await FirstManagerAuthorizationStates.authorization_state.set()
+        await FirstManagerAuthorizationStates.authorizing.set()
 
 
 # Можно поделить эту функцию на несколько
@@ -125,7 +125,7 @@ async def register_first_manager(callback_query: CallbackQuery, state: FSMContex
         msgs_to_del = [await callback_query.message.answer("Пожалуйста введите ваше ФИО кириллицей через пробел\n\n",
                                                            reply_markup=rkb.name_input_cancel_keyboard)]
         await state.update_data(msgs_to_del=msgs_to_del)
-        await FirstManagerAuthorizationStates.name_waiting_state.set()
+        await FirstManagerAuthorizationStates.getting_name.set()
     else:
         fio = data.get("name").split()
         if len(fio) < 3:
@@ -185,9 +185,9 @@ def register_authorization(dp: Dispatcher):
     dp.register_message_handler(authorized_notification, UserTypeFilter("manager"), commands=['start'], state="*")
     dp.register_message_handler(authorized_notification, UserTypeFilter("teacher"), commands=['start'], state="*")
     dp.register_message_handler(authorized_notification, UserTypeFilter("student"), commands=['start'], state="*")
-    dp.register_message_handler(get_login, content_types=['text'], state=AuthorizationStates.login_waiting_state)
-    dp.register_message_handler(get_password, content_types=['text'], state=AuthorizationStates.password_waiting_state)
+    dp.register_message_handler(get_login, content_types=['text'], state=AuthorizationStates.getting_login)
+    dp.register_message_handler(get_password, content_types=['text'], state=AuthorizationStates.getting_password)
     dp.register_message_handler(check_name, content_types=['text'],
-                                state=FirstManagerAuthorizationStates.name_waiting_state)
+                                state=FirstManagerAuthorizationStates.getting_name)
     dp.register_callback_query_handler(register_first_manager,
-                                       state=FirstManagerAuthorizationStates.authorization_state)
+                                       state=FirstManagerAuthorizationStates.authorizing)

@@ -105,3 +105,29 @@ async def courses_kb_generator():
         ]
     )
     return course_selection_keyboard
+
+
+group_edit_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Сменить название группы", callback_data='change_group_name'),
+            InlineKeyboardButton(text="Сменить таблицу успеваемости", callback_data='change_performance_list')
+        ],
+        [
+            InlineKeyboardButton(text="Список студентов", callback_data='display_student_list'),
+            InlineKeyboardButton(text="Обновить студентов", callback_data='update_student_list')
+        ],
+        [
+            InlineKeyboardButton(text="Отмена", callback_data='cancel_group_editing')
+        ]
+    ]
+)
+
+student_list_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Назад", callback_data='back'),
+            InlineKeyboardButton(text="Отмена", callback_data='cancel'),
+        ]
+    ]
+)

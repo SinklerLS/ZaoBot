@@ -13,7 +13,8 @@ student_keyboard = ReplyKeyboardMarkup(
             KeyboardButton(text="График учебы")
         ],
         [
-            KeyboardButton(text="Личная информация")
+            KeyboardButton(text="Личная информация"),
+            KeyboardButton(text="Сообщить о проблеме")
         ]
     ],
     resize_keyboard=True, one_time_keyboard=False, input_field_placeholder=action_request
@@ -32,6 +33,9 @@ teacher_keyboard = ReplyKeyboardMarkup(
         [
             KeyboardButton(text="Рассылка"),
             KeyboardButton(text="Личная информация")
+        ],
+        [
+            KeyboardButton(text="Сообщить о проблеме")
         ]
     ],
     resize_keyboard=True, one_time_keyboard=False, input_field_placeholder=action_request
@@ -48,7 +52,8 @@ manager_keyboard = ReplyKeyboardMarkup(
             KeyboardButton(text="Проверка ссылок")
         ],
         [
-            KeyboardButton(text="Личная информация")
+            KeyboardButton(text="Личная информация"),
+            KeyboardButton(text="Сообщить о проблеме")
         ]
     ],
     resize_keyboard=True, one_time_keyboard=False, input_field_placeholder=action_request
@@ -76,10 +81,11 @@ links_menu_keyboard = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text="Заменить ведомости"),
-            KeyboardButton(text="Заменить пересдачи")
+            KeyboardButton(text="Заменить пересдачи"),
+            KeyboardButton(text="Заменить таблицу рассылок")
         ],
         [
-            KeyboardButton(text="Заменить таблицу рассылок"),
+            KeyboardButton(text="Заменить почту поддержки"),
             KeyboardButton(text="Отмена")
         ]
     ],
@@ -149,7 +155,7 @@ students_editing_keyboard = ReplyKeyboardMarkup(
         [
             KeyboardButton(text="Добавить группу"),
             KeyboardButton(text="Удалить группы"),
-            KeyboardButton(text="Обновить группу")
+            KeyboardButton(text="Редактировать группу")
         ],
         [
             KeyboardButton(text="Сменить пароль студента"),
@@ -168,6 +174,19 @@ back_save_keyboard = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True, one_time_keyboard=False, input_field_placeholder="группа1, группа2..."
 )
+
+# group_change_keyboard = ReplyKeyboardMarkup(
+#     keyboard=[
+#         [
+#             KeyboardButton(text="Сменить название группы"),
+#             KeyboardButton(text="Сменить таблицу успеваемости")
+#         ],
+#         [
+#             KeyboardButton(text="Отмена")
+#         ]
+#     ],
+#     resize_keyboard=True
+# )
 
 # Переименовать их более корректно
 login_input_cancel_keyboard = ReplyKeyboardMarkup(
@@ -189,6 +208,11 @@ name_input_cancel_keyboard = ReplyKeyboardMarkup(
 url_change_cancel_keyboard = ReplyKeyboardMarkup(
     keyboard=[[KeyboardButton(text="Отмена")]],
     resize_keyboard=True, one_time_keyboard=True, input_field_placeholder="https://..."
+)
+
+email_change_cancel_keyboard = ReplyKeyboardMarkup(
+    keyboard=[[KeyboardButton(text="Отмена")]],
+    resize_keyboard=True, one_time_keyboard=True, input_field_placeholder="...@gmail.com"
 )
 
 

@@ -76,7 +76,7 @@ async def delete_groups(callback_query: CallbackQuery, state: FSMContext):
         await state.finish()
 
 
-def register_groups_del(dp):
+def register_group_del(dp):
     dp.register_message_handler(get_group_names, UserTypeFilter("manager"),
                                 content_types=['text'], text='Удалить группы')
     dp.register_message_handler(confirm_deleting, state=GroupsDelStates.confirm_groups_deleting_state)

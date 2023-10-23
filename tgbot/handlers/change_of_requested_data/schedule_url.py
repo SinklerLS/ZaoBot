@@ -2,7 +2,6 @@ from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 import tgbot.keyboards.reply as rkb
-from tgbot.models.db import Database
 from tgbot.filters.user_type import UserTypeFilter
 from tgbot.misc.states import ScheduleURLChangeStates
 from tgbot.misc.URL_validator import is_string_an_url
@@ -27,4 +26,4 @@ async def change_schedule_url(message: Message, state: FSMContext):
 def register_schedule_change(dp):
     dp.register_message_handler(request_schedule_url, UserTypeFilter("manager"),
                                 content_types=['text'], text='Заменить расписание')
-    dp.register_message_handler(change_schedule_url, state=ScheduleURLChangeStates.change_schedule_url_state)
+    dp.register_message_handler(change_schedule_url, state=ScheduleURLChangeStates.change_schedule_url)

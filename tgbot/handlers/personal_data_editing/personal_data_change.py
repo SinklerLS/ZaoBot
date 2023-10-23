@@ -147,7 +147,7 @@ async def clear_chat(message: Message, state: FSMContext, del_user_msg):
         await message.delete()
 
 
-def register_pd_change(dp):
+def register_personal_data_change(dp):
     dp.register_message_handler(send_login_command, ~UserTypeFilter(None), content_types=['text'],
                                 text=['Сменить логин'])
     dp.register_message_handler(send_password_check_command, ~UserTypeFilter(None),

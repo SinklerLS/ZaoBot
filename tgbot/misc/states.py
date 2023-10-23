@@ -2,22 +2,23 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 
 class AuthorizationStates(StatesGroup):
-    login_waiting_state = State()
-    password_waiting_state = State()
-    data_check_state = State()
+    getting_login = State()
+    getting_password = State()
+    checking_data = State()
 
 
 class FirstManagerAuthorizationStates(StatesGroup):
-    name_waiting_state = State()
-    authorization_state = State()
+    getting_name = State()
+    authorizing = State()
 
 
 class ScheduleURLChangeStates(StatesGroup):
-    change_schedule_url_state = State()
+    change_schedule_url = State()
 
 
 class WorkScheduleURLChangeStates(StatesGroup):
     change_work_schedule_url_state = State()
+
 
 class LearningScheduleURLChangeStates(StatesGroup):
     change_learning_schedule_url_state = State()
@@ -35,6 +36,10 @@ class MailingsURLChangeStates(StatesGroup):
     change_mailings_url_state = State()
 
 
+class ProblemReportingEmailChangeStates(StatesGroup):
+    change_problem_reporting_email = State()
+
+
 class GroupAddStates(StatesGroup):
     get_group_name_state = State()
     get_group_address_state = State()
@@ -43,6 +48,20 @@ class GroupAddStates(StatesGroup):
 class GroupRefreshStates(StatesGroup):
     get_group_name_state = State()
     refresh_group_state = State()
+
+
+class GroupEditingStates(StatesGroup):
+    getting_group_name = State()
+    group_form_interaction = State()
+    student_list_interaction = State()
+
+
+class GroupNameChangeStates(StatesGroup):
+    getting_new_group_name = State()
+
+
+class GroupURLChangeStates(StatesGroup):
+    getting_new_performance_list_url = State()
 
 
 class EmployeeAddStates(StatesGroup):
