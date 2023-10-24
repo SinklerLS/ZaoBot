@@ -18,6 +18,7 @@ password_changed_text = "Пароль изменен"
 
 
 async def send_password_request(message: Message, state: FSMContext):
+    """Запрашивает пароль пользователя."""
     del_msg = await message.answer(text=password_request_text,
                                    reply_markup=rkb.password_input_cancel_keyboard)
     await state.update_data(del_msg=del_msg)
@@ -25,6 +26,7 @@ async def send_password_request(message: Message, state: FSMContext):
 
 
 async def check_password(message: Message, state: FSMContext):
+    """Проверяет пароль пользователя."""
     data = await state.get_data()
     del_msg = data.get("del_msg")
     await del_msg.delete()
@@ -43,6 +45,7 @@ async def check_password(message: Message, state: FSMContext):
 
 
 async def get_new_password(message: Message, state: FSMContext):
+    """Получает пароль и запрашивает подтверждение смены данных."""
     data = await state.get_data()
     del_msg = data.get("del_msg")
     await del_msg.delete()
@@ -56,6 +59,7 @@ async def get_new_password(message: Message, state: FSMContext):
 
 
 async def confirm_password_change(callback_query: CallbackQuery, state: FSMContext):
+    """В случае подтверждения смены пароля вызывает функцию смены пароля или отменяет смену пароля."""
     data = await state.get_data()
     del_msg = data.get("del_msg")
     await del_msg.delete()
@@ -66,6 +70,7 @@ async def confirm_password_change(callback_query: CallbackQuery, state: FSMConte
 
 
 async def change_password(callback_query, state):
+    """Меняет пароль в БД."""
     data = await state.get_data()
     new_password = data.get("new_password")
     await db.change_password(callback_query.from_user.id, new_password)

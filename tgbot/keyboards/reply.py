@@ -1,3 +1,4 @@
+"""Содержит все Reply клавиатуры."""
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 action_request = "Выберите что хотите сделать..."

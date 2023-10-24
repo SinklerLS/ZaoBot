@@ -1,3 +1,4 @@
+"""Осуществляет все запросы к базе данных."""
 import aiosqlite
 
 
@@ -6,6 +7,7 @@ class Database:
         self.db_name = db_file
 
     async def create_tables(self):
+        """Создает все необходимые таблицы."""
         async with aiosqlite.connect(self.db_name) as db:
             async with db.cursor() as cursor:
                 await cursor.execute('''CREATE TABLE IF NOT EXISTS users 

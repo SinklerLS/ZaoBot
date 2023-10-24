@@ -6,6 +6,7 @@ import pytz
 timezone = pytz.timezone('Europe/Moscow')
         
 class SkipHandlerMiddleware(BaseMiddleware):
+    """Пропускает сообщения отправленные боту, когда он был выключен."""
     def __init__(self, bot_start_time):
         self.bot_start_time = bot_start_time
         super().__init__()

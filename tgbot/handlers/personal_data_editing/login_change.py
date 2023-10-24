@@ -14,6 +14,7 @@ login_change_confirmation_text = "Вы уверены, что хотите см�
 login_changed_text = "Логин изменен"
 
 async def send_login_request(message: Message, state: FSMContext):
+    """Просит ввести новый логин."""
     del_msg = await message.answer(text=login_request_text,
                                    reply_markup=rkb.login_input_cancel_keyboard)
     await state.update_data(del_msg=del_msg)
@@ -21,6 +22,7 @@ async def send_login_request(message: Message, state: FSMContext):
 
 
 async def get_new_login(message: Message, state: FSMContext):
+    """Получает логин и проверяет его наличие в БД."""
     data = await state.get_data()
     del_msg = data.get("del_msg")
     await del_msg.delete()
@@ -47,6 +49,7 @@ async def get_new_login(message: Message, state: FSMContext):
 
 
 async def confirm_login_change(callback_query: CallbackQuery, state: FSMContext):
+    """Подтверждает смену логина."""
     data = await state.get_data()
     del_msg = data.get("del_msg")
     await del_msg.delete()
@@ -57,6 +60,7 @@ async def confirm_login_change(callback_query: CallbackQuery, state: FSMContext)
 
 
 async def change_login(callback_query, state):
+    """Меняет логин в БД."""
     data = await state.get_data()
     new_login = data.get("new_login")
     await db.change_login(callback_query.from_user.id, new_login)

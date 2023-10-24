@@ -6,6 +6,7 @@ from tgbot.models.database_instance import db
 
 
 async def logout(message: Message, state: FSMContext):
+    """Удаляет пользователя из базы данных."""
     await db.delete_user_id(message.from_user.id)
     await message.answer("Вы больше не авторизованы.\n"
                          "<b>Чтобы авторизоваться введите команду /start</b>", reply_markup=rkb.empty_keyboard)

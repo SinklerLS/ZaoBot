@@ -16,6 +16,7 @@ from tgbot.models.database_instance import db
 
 @log_function_call
 async def authorized_notification(message: Message, state: FSMContext):
+    """Объявляет, что пользователь уже авторизован и отправляет меню."""
     await message.answer("<b>Вы уже авторизованы!</b>")
     user_type = await db.get_user_type(message.from_user.id)
     if user_type == "student":
@@ -30,6 +31,7 @@ async def authorized_notification(message: Message, state: FSMContext):
 # !Регистрацию менеджера и авторизацию других пользователей можно распределить в разные файлы
 @log_function_call
 async def start_authorization(message: Message, state: FSMContext):
+    """Определяет является ли пользователь первым пользователем бота, если да запускает регистрацию первого менеджера, иначе запрашивает логин."""
     await message.answer("<b>Добро пожаловать в бота для заочников!</b>")
     if await db.users_exist():
         msgs_to_del = [await message.answer(text="Введите логин", reply_markup=rkb.login_input_cancel_keyboard)]
@@ -46,6 +48,7 @@ async def start_authorization(message: Message, state: FSMContext):
 # !Сделать проверку на непонятные символы
 @log_function_call
 async def get_login(message: Message, state: FSMContext):
+    """Получает логин и проверяет корректность введенных данных."""
     msg_text = message.text.split()
     await clear_chat(message, state, 1)
     if len(msg_text) != 1:
@@ -61,6 +64,7 @@ async def get_login(message: Message, state: FSMContext):
 
 @log_function_call
 async def get_password(message: Message, state: FSMContext):
+    """Получает пароль"""
     await clear_chat(message, state, 1)
     await state.update_data(password=message.text)
     await AuthorizationStates.checking_data.set()
@@ -69,6 +73,7 @@ async def get_password(message: Message, state: FSMContext):
 
 @log_function_call
 async def check_data(message: Message, state: FSMContext):
+    """Проверяет совпадают ли значения логина и пароля с каким-либо зарегистрированным пользователем."""
     data = await state.get_data()
     login = data.get("login")
     password = data.get("password")
@@ -83,6 +88,7 @@ async def check_data(message: Message, state: FSMContext):
 
 @log_function_call
 async def authorize_user(message: Message, state: FSMContext, login):
+    """Авторизирует пользователя"""
     await db.connect_telegram_id(message.from_user.id, login)
     user_type = await db.get_user_type(message.from_user.id)
     if user_type == "student":
@@ -96,6 +102,7 @@ async def authorize_user(message: Message, state: FSMContext, login):
 
 @log_function_call
 async def check_name(message: Message, state: FSMContext):
+    """Проверяет корректность введенного имени. (для первого менеджера)"""
     msg_text = message.text.split(" ")
     await clear_chat(message, state, 1)
     if len(msg_text) < 2:
@@ -118,6 +125,7 @@ async def check_name(message: Message, state: FSMContext):
 # Можно поделить эту функцию на несколько
 @log_function_call
 async def register_first_manager(callback_query: CallbackQuery, state: FSMContext):
+    """Регистрирует первого менеджера."""
     await callback_query.answer()
     await clear_chat(callback_query.message, state, 0)
     data = await state.get_data()
@@ -147,6 +155,8 @@ async def register_first_manager(callback_query: CallbackQuery, state: FSMContex
 
 @log_function_call
 async def generate_login(fio, user_type):
+    """Генерирует логин."""
+    # Функция вынесена в отдельный файл, нужно переделать...
     first_name_en = translit(fio[0], 'ru', reversed=True).lower()
     last_name_en = translit(fio[1], 'ru', reversed=True).lower()
     if fio[2] is None:
@@ -167,11 +177,13 @@ async def generate_login(fio, user_type):
 
 # Вынести в отдельный файл
 async def del_msg(message, time):
+    """Удаляет сообщение через заданное время."""
     await asyncio.sleep(time)
     await message.delete()
 
 
 async def clear_chat(message: Message, state: FSMContext, del_user_msg):
+    """Удаляет все сообщения, отправленные в процессе регистрации/авторизации."""
     data = await state.get_data()
     msgs_to_del = data.get("msgs_to_del")
     for msg in msgs_to_del:

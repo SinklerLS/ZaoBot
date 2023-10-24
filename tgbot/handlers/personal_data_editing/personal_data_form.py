@@ -3,6 +3,7 @@ import tgbot.keyboards.reply as rkb
 from tgbot.models.database_instance import db
 
 async def open_personal_data_form(message: Message):
+    """Отправляет сообщение с данными пользователя."""
     user_id = message.from_user.id
     name = await db.get_fio(user_id)
     user_type = await db.get_user_type(user_id)

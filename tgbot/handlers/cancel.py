@@ -8,6 +8,7 @@ from tgbot.models.database_instance import db
 
 
 async def msg_cancel_all(message: Message, state: FSMContext):
+    """Отменяет любое действие и открывает главное меню (сообщение)."""
     user_type = await db.get_user_type(message.from_user.id)
     if user_type == "student":
         await message.answer("Меню студента", reply_markup=rkb.student_keyboard)
@@ -23,6 +24,7 @@ async def msg_cancel_all(message: Message, state: FSMContext):
 
 
 async def cq_cancel_all(callaback_query: CallbackQuery, state: FSMContext):
+    """Отменяет любое действие и открывает главное меню (колбек)."""
     user_type = await db.get_user_type(callaback_query.from_user.id)
     if user_type == "student":
         await callaback_query.message.answer("Меню студента", reply_markup=rkb.student_keyboard)

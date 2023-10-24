@@ -1,3 +1,4 @@
+"""Содержит функции вызывающие разные меню при вводе определенного текста или при нажатии на кнопку."""
 from aiogram.types import Message
 from tgbot.filters.user_type import UserTypeFilter
 import tgbot.keyboards.reply as rkb

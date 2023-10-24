@@ -1,7 +1,5 @@
+"""Содержит все Inline клавиатуры."""
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-from tgbot.models.db import Database
-import datetime
 from tgbot.models.database_instance import db
 
 confirmation_kb = InlineKeyboardMarkup(
@@ -72,39 +70,6 @@ manager_mailing_keyboard = InlineKeyboardMarkup(
         ]
     ]
 )
-
-
-async def courses_kb_generator():
-    groups = await db.get_group_names()
-    courses_buttons_list = []
-    courses_list = []
-    current_year = datetime.datetime.now().year
-    current_month = datetime.datetime.now().month
-    for gr in groups:
-        if gr[0].isdigit():
-            year_of_admission = str(current_year // 100) + gr[0][:2]
-        else:
-            year_of_admission = str(current_year // 100) + gr[0][-2:]
-        if current_month < 9:
-            course = current_year - int(year_of_admission)
-        else:
-            course = current_year - int(year_of_admission) + 1
-        if course not in courses_list:
-            courses_list.append(course)
-    courses_list.sort()
-    for course in courses_list:
-        courses_buttons_list += [InlineKeyboardButton(text="Курс " + str(course),
-                                                      callback_data="course_" + str(course))]
-
-    course_selection_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            courses_buttons_list,
-            [
-                InlineKeyboardButton(text='Подтвердить', callback_data='course_select_confirm')
-            ]
-        ]
-    )
-    return course_selection_keyboard
 
 
 group_edit_keyboard = InlineKeyboardMarkup(

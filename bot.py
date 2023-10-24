@@ -50,14 +50,18 @@ logger = logging.getLogger(__name__)
 timezone = pytz.timezone('Europe/Moscow')
 
 def register_all_middlewares(dp, bot_start_time):
+    """Регистрирует все мидлвари."""
+    # Нет антиспам мидлвари. Нужно сделать
     dp.setup_middleware(SkipHandlerMiddleware(bot_start_time))
 
 
 def register_all_filters(dp):
+    """Регистрирует все фильтры."""
     dp.filters_factory.bind(UserTypeFilter)
 
 
 def register_all_handlers(dp):
+    """Регистрирует все хэндлеры."""
     register_cancel(dp)
     register_authorization(dp)
     register_logout(dp)
@@ -91,10 +95,12 @@ def register_all_handlers(dp):
 
 
 def set_scheduled_jobs(scheduler, bot):
+    """Устанавливает запланированные события."""
     scheduler.add_job(check_msgs_list, "interval", seconds=60, args=(bot,))
 
 
 async def main():
+    """Задает все необходимые переменные для работы бота и запускает его."""
     logging.basicConfig(
         level=logging.INFO,
         format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',

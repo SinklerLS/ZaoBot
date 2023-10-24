@@ -4,6 +4,7 @@ from tgbot.models.database_instance import db
 
 
 async def generate_login(fio, year):
+    """Генерирует логин."""
     first_name_en = translit(fio[0], 'ru', reversed=True).lower()
     last_name_en = translit(fio[1], 'ru', reversed=True).lower()
     if fio[2] is None:

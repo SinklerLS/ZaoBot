@@ -1,3 +1,4 @@
+"""Содержит функционал для просмотра успеваемости и долгов для студентов."""
 import io
 import aiohttp
 import asyncio
@@ -12,6 +13,7 @@ failure_message = "Данные не удалось обработать, поп
 
 # Удалять это!
 async def send_data_processing_notification(message: Message):
+    """Отправляет оповещение о начале обработки данных."""
     await message.delete()
     await message.answer("Данные обрабатываются...\n"
                          "Это может занять несколько секунд")
@@ -21,6 +23,7 @@ async def send_data_processing_notification(message: Message):
 # Возможно стоит подключаться к таблице при запуске бота и не отключаться от нее
 # Создать словарь с группами и подключениями и проверить (узнать сколько места в памяти будут занимать книги)
 async def prepare_excel_file(message: Message):
+    """Подготавливает эксель таблицу группы для дальнейшей работы."""
     group_name = await db.get_user_group_name(message.from_user.id)
     file_url = await db.get_performance_list_by_group_name(group_name)
     file_id = file_url.split('/')[-2]
@@ -40,6 +43,7 @@ async def prepare_excel_file(message: Message):
 
 
 async def check_year_of_enrollment(message: Message, group_name, workbook):
+    """Проверяет является ли группа 19 года поступления."""
     if group_name[:2] != "19" and group_name[-2:] != "19":
         await find_rows_and_columns(message, workbook)
     else:
@@ -47,6 +51,7 @@ async def check_year_of_enrollment(message: Message, group_name, workbook):
 
 
 async def find_rows_and_columns(message: Message, workbook):
+    """Определяет столбцы и строки с искомыми значениями."""
     sheet = workbook.active
     target_row = None
     for row_number, row in enumerate(sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=1, values_only=True), start=1):
@@ -97,6 +102,7 @@ async def find_rows_and_columns(message: Message, workbook):
 async def create_performance_message(message: Message, sheet, target_row, 
                                      last_name_col, first_name_col, middle_name_col, 
                                      mark_col, subject_name_col):
+    """Собирает данные по успеваемости студента, вызвавшего функцию и создает сообщение."""
     user_last_name = await db.get_user_ln(message.from_user.id)
     user_first_name = await db.get_user_fn(message.from_user.id)
     user_middle_name = await db.get_user_mn(message.from_user.id)
@@ -131,6 +137,7 @@ async def create_performance_message(message: Message, sheet, target_row,
 async def create_debt_message(message: Message, sheet, target_row,
                               last_name_col, first_name_col, middle_name_col,
                               mark_col, subject_name_col, semestra_col):
+    """Собирает данные по долгам студента, вызвавшего функцию и создает сообщение."""
     # Доделать!
     user_last_name = await db.get_user_ln(message.from_user.id)
     user_first_name = await db.get_user_fn(message.from_user.id)
@@ -165,6 +172,7 @@ async def create_debt_message(message: Message, sheet, target_row,
     
 
 async def go_through_group_excel_sheets_19(message: Message, workbook):
+    """Проходится по листам таблицы и вызывает проверку на совпадение имени студента с названием листа."""
     for sheet in workbook.worksheets:
         sheet_title = sheet.title.strip()
         if sheet_title.endswith(".") or sheet_title.endswith(")"):
@@ -179,6 +187,7 @@ async def go_through_group_excel_sheets_19(message: Message, workbook):
             
 
 async def check_student_name_19(message: Message, sheet, student_name):
+    """Проверяет совпадает ли имя студента вызвавшего функцию с названием листа."""
     student_name_parts = student_name.split(" ")
     if len(student_name_parts[0].split("-")) == 1:
         student_name_parts[0] = student_name_parts[0].capitalize()
@@ -196,6 +205,7 @@ async def check_student_name_19(message: Message, sheet, student_name):
 
 
 async def find_rows_and_columns_19(message: Message, sheet):
+    """Находит столбцы и колонки с искомыми значениями."""
     known_cells = [(5, 3), (6, 2)] 
     for row, col in known_cells:
         cell_value = sheet.cell(row=row, column=col).value
@@ -212,6 +222,7 @@ async def find_rows_and_columns_19(message: Message, sheet):
 
 
 async def create_debt_message_19(message: Message, sheet, target_row, subject_name_col, mark_col):
+    """Создает сообщение с долгами студента."""
     debt_message = "<b>Ваши долги:</b>\n"
     for row in sheet.iter_rows(min_row=target_row, values_only=True):
         if row[mark_col] is not None and row[mark_col] == 'долг':
@@ -220,6 +231,7 @@ async def create_debt_message_19(message: Message, sheet, target_row, subject_na
 
 
 async def create_performance_message_19(message: Message, sheet, target_row, subject_name_col, mark_col):
+    """Создает сообщение с успеваемостью студента."""
     performance_message = "<b>Ваша успеваемость:</b>\n"
     for row in sheet.iter_rows(min_row=target_row, values_only=True):
         if row[mark_col] is not None and row[mark_col] != 'долг':
@@ -228,6 +240,7 @@ async def create_performance_message_19(message: Message, sheet, target_row, sub
 
 
 async def send_debt_message(message: Message, debt_message):
+    """Отправляет сообщение со списком долгов студенту."""
     if debt_message == "<b>Ваши долги:</b>\n":
         debt_message = "<b>У вас нет долгов</b>"
     await message.answer(debt_message)
@@ -235,6 +248,7 @@ async def send_debt_message(message: Message, debt_message):
 
 # Если есть долги, то писать, что есть только долги
 async def send_performance_message(message: Message, performance_message):
+    """Отправляет сообщение с успеваемостью студенту."""
     if performance_message == "<b>Ваша успеваемость:</b>\n":
         performance_message = "<b>Ваша успеваемость еще не сформирована</b>"
     await message.answer(performance_message)

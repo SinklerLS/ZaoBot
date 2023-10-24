@@ -5,6 +5,7 @@ from aiogram.types import BotCommand, BotCommandScopeDefault
 
 # Не отображать /start для авторизованных пользователей
 async def set_commands(bot: Bot):
+    """Сощдает команды для меню команд."""
     commands = [
         BotCommand(
             command='start',
