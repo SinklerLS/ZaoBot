@@ -109,16 +109,17 @@ async def create_performance_message(message: Message, sheet, target_row,
     performance_rows = []
     
     async def process_row(row):
-        last_name = row[last_name_col].strip() if row[last_name_col] is not None else None
-        first_name = row[first_name_col].strip() if row[first_name_col] is not None else None
-        middle_name = row[middle_name_col].strip() if row[middle_name_col] is not None else None
-        
+        last_name = row[last_name_col].strip() if row[last_name_col] is not None and isinstance(row[last_name_col], str) else None
+        first_name = row[first_name_col].strip() if row[first_name_col] is not None and isinstance(row[first_name_col], str) else None
+        middle_name = row[middle_name_col].strip() if row[middle_name_col] is not None and isinstance(row[middle_name_col], str) else None
+
         if last_name == user_last_name and first_name == user_first_name and middle_name == user_middle_name:
-            mark = row[mark_col].strip() if row[mark_col] is not None else None
-            subject_name = row[subject_name_col].strip() if row[subject_name_col] is not None else None
-            
+            mark = row[mark_col].strip() if row[mark_col] is not None and isinstance(row[mark_col], str) else None
+            subject_name = row[subject_name_col].strip() if row[subject_name_col] is not None and isinstance(row[subject_name_col], str) else None
+
             if mark != '' and mark != 'долг' and mark is not None:
                 performance_rows.append(f"◦ {subject_name} - <b>{mark}</b>")
+
     
     rows = sheet.iter_rows(min_row=target_row, values_only=True)
     await asyncio.gather(*[process_row(row) for row in rows])
@@ -143,17 +144,18 @@ async def create_debt_message(message: Message, sheet, target_row,
     debt_rows = []
 
     async def process_row(row):
-        last_name = row[last_name_col].strip() if row[last_name_col] is not None else None
-        first_name = row[first_name_col].strip() if row[first_name_col] is not None else None
-        middle_name = row[middle_name_col].strip() if row[middle_name_col] is not None else None
-        # Проверка на None!!!!!
+        last_name = row[last_name_col].strip() if row[last_name_col] is not None and isinstance(row[last_name_col], str) else None
+        first_name = row[first_name_col].strip() if row[first_name_col] is not None and isinstance(row[first_name_col], str) else None
+        middle_name = row[middle_name_col].strip() if row[middle_name_col] is not None and isinstance(row[middle_name_col], str) else None
+
         if last_name == user_last_name and first_name == user_first_name and middle_name == user_middle_name:
-            mark = row[mark_col].strip() if row[mark_col] is not None else None
-            subject_name = row[subject_name_col].strip() if row[subject_name_col] is not None else None
-            semestra = row[semestra_col].strip() if row[semestra_col] is not None else None
-            
+            mark = row[mark_col].strip() if row[mark_col] is not None and isinstance(row[mark_col], str) else None
+            subject_name = row[subject_name_col].strip() if row[subject_name_col] is not None and isinstance(row[subject_name_col], str) else None
+            semestra = row[semestra_col].strip() if row[semestra_col] is not None and isinstance(row[semestra_col], str) else None
+
             if mark == 'долг':
                 debt_rows.append(f"◦ {subject_name} - <b>{semestra}</b>")
+
 
     rows = sheet.iter_rows(min_row=target_row, values_only=True)
     await asyncio.gather(*[process_row(row) for row in rows])

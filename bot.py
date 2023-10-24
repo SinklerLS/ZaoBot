@@ -14,7 +14,7 @@ from tgbot.handlers.mailing.delayed_mailing_send import check_msgs_list
 from tgbot.misc.commands import set_commands
 
 from tgbot.handlers.cancel import register_cancel
-from tgbot.handlers.menu import register_menu
+from tgbot.handlers.keyboard_menu import register_menu
 from tgbot.handlers.authorization import register_authorization
 from tgbot.handlers.logout import register_logout
 from tgbot.handlers.change_of_requested_data.schedule_url import register_schedule_change
@@ -29,13 +29,14 @@ from tgbot.handlers.group_management.group_list_editing.group_add import registe
 from tgbot.handlers.group_management.group_list_editing.group_del import register_group_del
 from tgbot.handlers.group_management.group_data_editing.group_selection import register_group_selection
 from tgbot.handlers.group_management.group_data_editing.group_form_interaction import register_group_form_interaction
-from tgbot.handlers.group_management.group_data_editing.group_name_change import register_group_name_change
-from tgbot.handlers.group_management.group_data_editing.performance_list_change import register_performance_list_change
-from tgbot.handlers.group_management.group_data_editing.student_list_interaction import register_student_list_interaction
+from tgbot.handlers.group_management.group_data_editing.group.group_name_change import register_group_name_change
+from tgbot.handlers.group_management.group_data_editing.group.performance_list_change import register_performance_list_change
+from tgbot.handlers.group_management.group_data_editing.students.student_list_form_interaction import register_student_list_interaction
 from tgbot.handlers.employee_management.employee_add import register_employee_add
 from tgbot.handlers.employee_management.employees_del import register_employees_del
 from tgbot.handlers.personal_data_editing.change_user_password import register_change_user_password
-from tgbot.handlers.personal_data_editing.personal_data_change import register_personal_data_change
+from tgbot.handlers.personal_data_editing.login_change import register_login_change
+from tgbot.handlers.personal_data_editing.password_change import register_password_change
 from tgbot.handlers.mailing.mailing_data_processing import register_mailing_data_processing
 from tgbot.handlers.mailing.mailing_form_interaction import register_mailing_form_interaction
 from tgbot.handlers.mailing.manager_mailing_form import register_manager_mailing_form
@@ -74,7 +75,8 @@ def register_all_handlers(dp):
     register_change_user_password(dp)
     register_group_del(dp)
     register_employees_del(dp)
-    register_personal_data_change(dp)
+    register_login_change(dp)
+    register_password_change(dp)
     register_mailing_data_processing(dp)
     register_mailing_form_interaction(dp)
     register_manager_mailing_form(dp)

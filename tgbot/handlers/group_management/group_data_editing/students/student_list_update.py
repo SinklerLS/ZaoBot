@@ -8,20 +8,34 @@ from openpyxl import load_workbook
 
 import tgbot.keyboards.reply as rkb
 from tgbot.misc.login_generator import generate_login
-from .group_edit_form import send_group_edit_form
+from tgbot.handlers.group_management.group_data_editing.group_edit_form import send_group_edit_form
 from tgbot.models.database_instance import db
 
 group_name_request = "<b>Введите название группы, которую хотите обновить</b>"
 failure_message = "Данные не удалось обработать, попробуйте позже..."
 
 # Показывать актуальный список студентов после обновления
-# Доделать
 
 # Возможно стоит вынести эту функцию в отдельный файл
-# оповещать пользователя, что идет обновление
+
+
+
+async def check_year_of_enrollment(message: Message, state: FSMContext):
+    state_data = await state.get_data()
+    group_name = state_data["group_name"]
+    if group_name[:2] != "19" and group_name[-2:] != "19":
+        await open_performance_list(message, state)
+    else:
+        del_msg = await message.answer("Обновление списка студентов групп 19 года не доступно",
+                                       reply_markup=rkb.manager_keyboard)
+        await state.update_data(del_msg=del_msg)
+        await send_group_edit_form(message, state)
+
+
 async def open_performance_list(message: Message, state: FSMContext):
-    await message.answer("Происходит обновление...\n\n"
-                         "Это может занять несколько секунд")
+    del_msg = await message.answer("Происходит обновление...\n\n"
+                                   "Это может занять несколько секунд")
+    await state.update_data(del_msg=del_msg)
     data = await state.get_data()
     group_name = data.get("group_name")
     performance_list_url = await db.get_performance_list_by_group_name(group_name)
@@ -38,19 +52,7 @@ async def open_performance_list(message: Message, state: FSMContext):
         print(f"Unexpected error: {e}")
         failure_flag = 1
     if not failure_flag:
-        await check_year_of_enrollment(message, state, workbook)
-
-
-async def check_year_of_enrollment(message: Message, state: FSMContext, workbook):
-    state_data = await state.get_data()
-    group_name = state_data["group_name"]
-    if group_name[:2] != "19" and group_name[-2:] != "19":
         await find_rows_and_columns(message, state, workbook)
-    else:
-        # await go_through_group_excel_sheets_19(message, state)
-        await message.answer("На данный момент обновление списка студентов групп 19 года не доступно\n\n"
-                             "Данная возможность появится в ближайшие дни", reply_markup=rkb.mailing_keyboard)
-        await send_group_edit_form(message, state)
 
 
 async def find_rows_and_columns(message: Message, state: FSMContext, workbook):
@@ -157,6 +159,8 @@ async def update_students_in_database(message: Message, state: FSMContext, learn
     # Писать, если ничего не изменилось
     added_students_data = "".join(added_students_data)
     deleted_students = "".join(deleted_students)
+    del_msg = state_data["del_msg"]
+    await del_msg.delete()
     await message.answer(f"Группа {group_name} обновлена\n"
                          f"*Новые студенты:* \n{added_students_data}\n"
                          f"*Удаленные студенты:*\n{deleted_students}",

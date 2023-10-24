@@ -1,4 +1,5 @@
 from aiogram import Bot
+from aiogram.types.menu_button import MenuButton
 from aiogram.types import BotCommand, BotCommandScopeDefault
 
 

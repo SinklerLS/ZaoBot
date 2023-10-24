@@ -3,24 +3,27 @@ from aiogram.dispatcher import FSMContext
 
 import tgbot.keyboards.reply as rkb
 from tgbot.filters.user_type import UserTypeFilter
-from .group_edit_form import send_group_edit_form
+from tgbot.handlers.group_management.group_data_editing.group_edit_form import send_group_edit_form
+from tgbot.handlers.personal_data_editing.change_user_password import start_change
+from tgbot.handlers.cancel import cq_cancel_all
 from tgbot.misc.states import GroupEditingStates
 
 
 async def handle_student_list_interaction(callback_query: CallbackQuery, state: FSMContext):
     cq_data = callback_query.data
-    # state_data = await state.get_data()
-    # del_msgs = state_data["del_msgs"]
+    state_data = await state.get_data()
+    del_msg = state_data["del_msg"]
+    if del_msg is not None:
+        await del_msg.delete()
+        await state.update_data(del_msg=None)
 
-    # for msg in del_msgs:
-        # await msg.delete()
-    await state.update_data(del_msgs=[])
+    # if cq_data == "change_student_password":
+    #     await start_change()
 
     if cq_data == 'back':
         await send_group_edit_form(callback_query.message, state)
     elif cq_data == 'cancel':
-        await callback_query.message.answer("Меню менеджера", reply_markup=rkb.manager_keyboard)
-        await state.finish()
+        await cq_cancel_all(callback_query, state)
 
 
 def register_student_list_interaction(dp):

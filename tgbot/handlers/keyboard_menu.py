@@ -1,7 +1,7 @@
-import tgbot.keyboards.reply as rkb
 from aiogram.types import Message
 from tgbot.filters.user_type import UserTypeFilter
-from tgbot.models.database_instance import db
+import tgbot.keyboards.reply as rkb
+from .personal_data_editing.personal_data_form import open_personal_data_form
 
 
 async def open_links_menu(message: Message):
@@ -18,22 +18,6 @@ async def open_check_links_menu(message: Message):
 
 async def open_mailing_menu(message: Message):
     await message.answer(text="Меню рассылки", reply_markup=rkb.mailing_keyboard)
-
-
-async def open_personal_data_form(message: Message):
-    user_id = message.from_user.id
-    fio = await db.get_fio(user_id)
-    user_type = await db.get_user_type(user_id)
-    login = await db.get_login(user_id)
-    personal_data = f"Личная информация\n<b>ФИО</b>: {fio}\n<b>Логин</b>: {login}\n"
-    if user_type == "student":
-        group = await db.get_user_group_name(user_id)
-        personal_data += f"<b>Роль</b>: студент\n<b>Группа</b>: {group}"
-    elif user_type == "teacher":
-        personal_data += "<b>Роль</b>: преподаватель"
-    else:
-        personal_data += "<b>Роль</b>: менеджер"
-    await message.answer(text=personal_data, reply_markup=rkb.personal_data_editing_keyboard)
 
 
 async def open_employees_editing_menu(message: Message):

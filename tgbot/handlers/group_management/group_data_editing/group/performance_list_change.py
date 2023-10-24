@@ -7,21 +7,26 @@ from tgbot.models.database_instance import db
 
 
 async def check_new_performance_list_url(message: Message, state: FSMContext):
+    state_data = await state.get_data()
+    del_msg = state_data["del_msg"]
+    await del_msg.delete()
+    await message.delete()
+
     new_performance_list_url = message.text
     performance_url_list = await db.get_performance_urls()
     is_duplicate = 0
     for url in performance_url_list:
         if url[0] == new_performance_list_url:
-            connected_group_name = await db.get_group_name_by_url(new_performance_list_url)
-            # new_group_name = state_data["new_group_name"]
-            await message.answer(
-                text=f"f*Такая ссылка уже привязана к группе* {connected_group_name}\n\n"
-                     "*Введите другую ссылку на таблицу успеваемости*",
-                     parse_mode="MARKDOWN")
             is_duplicate = 1
             break
 
-    if not is_duplicate:
+    if is_duplicate:
+        connected_group_name = await db.get_group_name_by_url(new_performance_list_url)
+        del_msg = await message.answer(f"f*Такая ссылка уже привязана к группе* {connected_group_name}\n\n"
+                                       "*Введите другую ссылку на таблицу успеваемости*",
+                                       parse_mode="MARKDOWN")
+        await state.update_data(del_msg=del_msg)
+    else:
         await state.update_data(new_performance_list_url=new_performance_list_url)
         await change_performance_list(message, state)
 

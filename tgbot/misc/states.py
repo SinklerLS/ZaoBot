@@ -76,12 +76,14 @@ class ChangeUserPasswordStates(StatesGroup):
     get_new_user_password_state = State()
 
 
-class PersonalDataChangeStates(StatesGroup):
-    get_new_login_state = State()
-    check_password_state = State()
-    confirm_login_change_state = State()
-    get_new_password_state = State()
-    confirm_new_password_state = State()
+class LoginChangeStates(StatesGroup):
+    getting_new_login = State()
+    confirming_login_change = State()
+
+class PasswordChangeStates(StatesGroup):
+    checking_password = State()
+    getting_new_password = State()
+    confirming_new_password = State()
 
 
 class GroupsDelStates(StatesGroup):

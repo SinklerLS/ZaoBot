@@ -4,7 +4,6 @@ from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 import tgbot.keyboards.reply as rkb
-from tgbot.models.db import Database
 from tgbot.misc.states import ChangeUserPasswordStates
 from tgbot.filters.user_type import UserTypeFilter
 from tgbot.models.database_instance import db

@@ -457,7 +457,7 @@ class Database:
                 result = await cursor.fetchall()
                 return result
 
-    async def get_user_logins(self):
+    async def get_logins(self):
         async with aiosqlite.connect(self.db_name) as db:
             async with db.cursor() as cursor:
                 await cursor.execute("SELECT login FROM 'users'")
