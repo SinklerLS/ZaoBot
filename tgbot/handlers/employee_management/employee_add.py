@@ -1,16 +1,14 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
-from transliterate import translit
 import random
 import asyncio
-import itertools
 
 import tgbot.keyboards.reply as rkb
-from tgbot.models.db import Database
 from tgbot.misc.states import EmployeeAddStates
 import tgbot.keyboards.inline as ikb
 from tgbot.filters.user_type import UserTypeFilter
 from tgbot.models.database_instance import db
+from tgbot.misc.login_generator import generate_login
 
 
 async def start_adding(message: Message, state: FSMContext):
@@ -99,25 +97,6 @@ async def add_user(callback_query: CallbackQuery, state: FSMContext):
                                                            reply_markup=rkb.name_input_cancel_keyboard)]
         await state.update_data(msgs_to_del=msgs_to_del)
         await EmployeeAddStates.name_waiting_state.set()
-
-
-async def generate_login(fio, user_type):
-    first_name_en = translit(fio[0], 'ru', reversed=True).lower()
-    last_name_en = translit(fio[1], 'ru', reversed=True).lower()
-    if fio[2] is None:
-        initials = first_name_en[0] + last_name_en[0]
-    else:
-        middle_name_en = translit(fio[2], 'ru', reversed=True).lower()
-        initials = first_name_en[0] + last_name_en[0] + middle_name_en[0]
-    login_base = initials + "." + user_type
-
-    logins = await db.get_user_logins()
-    for i in itertools.count(start=1):
-        login = f"{login_base}.{str(i)}"
-        if login not in [log[0] for log in logins]:
-            return login
-
-        logins.append((login,))
 
 
 async def del_msg(message, time):

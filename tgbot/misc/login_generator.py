@@ -14,7 +14,7 @@ async def generate_login(fio, year):
         initials = first_name_en[0] + last_name_en[0] + middle_name_en[0]
     login_base = initials + "." + year
 
-    logins = await db.get_user_logins()
+    logins = await db.get_logins()
     for i in itertools.count(start=1):
         login = f"{login_base}.{str(i)}"
         if login not in [log[0] for log in logins]:

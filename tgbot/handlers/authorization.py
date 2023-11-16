@@ -12,6 +12,7 @@ from tgbot.misc.states import AuthorizationStates, FirstManagerAuthorizationStat
 from aiogram.dispatcher import FSMContext
 from transliterate import translit
 from tgbot.models.database_instance import db
+from tgbot.misc.login_generator import generate_login
 
 
 @log_function_call
@@ -151,28 +152,6 @@ async def register_first_manager(callback_query: CallbackQuery, state: FSMContex
         asyncio.create_task(del_msg(personal_data, 600))
         await callback_query.message.answer(text="Меню менеджера", reply_markup=rkb.manager_keyboard)
         await state.finish()
-
-
-@log_function_call
-async def generate_login(fio, user_type):
-    """Генерирует логин."""
-    # Функция вынесена в отдельный файл, нужно переделать...
-    first_name_en = translit(fio[0], 'ru', reversed=True).lower()
-    last_name_en = translit(fio[1], 'ru', reversed=True).lower()
-    if fio[2] is None:
-        initials = first_name_en[0] + last_name_en[0]
-    else:
-        middle_name_en = translit(fio[2], 'ru', reversed=True).lower()
-        initials = first_name_en[0] + last_name_en[0] + middle_name_en[0]
-    login_base = initials + "." + user_type
-
-    logins = await db.get_user_logins()
-    for i in itertools.count(start=1):
-        login = f"{login_base}.{str(i)}"
-        if login not in [log[0] for log in logins]:
-            return login
-
-        logins.append((login,))
 
 
 # Вынести в отдельный файл
